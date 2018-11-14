@@ -33,6 +33,7 @@ public class UI : MonoBehaviour
     public void ChangeMainMessage(string newMessage)
     {
         // TODO: Change _mainText
+        _mainText.text = newMessage;
     }
 
     /// <summary>
@@ -43,5 +44,7 @@ public class UI : MonoBehaviour
     public void UpdatePlayersScores(int leftPlayerScore, int rightPlayerScore)
     {
         // TODO: Change _leftPlayerScoreText & _rightPlayerScoreText - Use N0 formatting
+        _leftPlayerScoreText.text = leftPlayerScore.ToString("N0");
+        _rightPlayerScoreText.text = rightPlayerScore.ToString("N0");
     }
 }

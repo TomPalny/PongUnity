@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -59,12 +59,18 @@ public class GameManager : MonoBehaviour
 
         // Wait before starting new match (Countdown)
         // TODO: Using this coroutine, show a countdown message for _matchWaitSeconds seconds (Use UI.Instance.ChangeMainMessage)
-
+        while (_matchWaitSeconds > 0)
+        {
+            UI.Instance.ChangeMainMessage(_matchWaitSeconds.ToString("N0"));
+            yield return new WaitForSeconds(1);
+            _matchWaitSeconds--;
+        }
+        UI.Instance.ChangeMainMessage("");
         // Start
         _ball.GiveRandomVelocity();
 
         // TODO: Remove this yield break
-        yield break;
+        
     }
 
     /// <summary>
@@ -72,7 +78,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void StartNewGame()
     {
-        Application.LoadLevel(0);
+        SceneManager.LoadScene(0);
     }
 
     /// <summary>
@@ -91,29 +97,46 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     private IEnumerator ShowGoalMessageAndHandleGoal(Player.PlayerType scoringPlayer)
     {
+        string playerScored;
+        bool isGameOver = false;
         // TODO: Increase the correct player's score
-
+        if (scoringPlayer.Equals(Player.PlayerType.Left))
+        {
+            _leftPlayerScore++;
+            if (_leftPlayerScore >= 3) isGameOver = true;
+            playerScored = "Left";
+        }
+        else
+        {
+            _rightPlayerScore++;
+            if (_rightPlayerScore >= 3) isGameOver = true;
+            playerScored = "Right";
+        }
         // Update score
         UI.Instance.UpdatePlayersScores(_leftPlayerScore, _rightPlayerScore);
 
 
         // Show message / Handle game victory
         // TODO: Handle victory condition (_scoreToWin)
-        bool isGameOver = false;
+        
         if (isGameOver)
         {
             // TODO: Show message which player has won
             // TODO: Wait 3 seconds before starting a new game
+            UI.Instance.ChangeMainMessage("The " + playerScored + " Player WON!");
+            yield return new WaitForSeconds(3);
             StartNewGame();
         }
         else
         {
             // TODO: Show message which player has scored
             // TODO: Wait 3 seconds before starting a new match
+            UI.Instance.ChangeMainMessage("The "+ playerScored +" Player scored!");
+            yield return new WaitForSeconds(3);
             StartCoroutine(StartNewMatch());
         }
 
         // TODO: Remove this "Yield break" after you've implemented the above
-        yield break;
+        
     }
 }
